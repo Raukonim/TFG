@@ -7,17 +7,11 @@ Created on Fri Mar 11 13:46:47 2016
 
 from __future__ import division
 from pylab import*
+import os
 
 interactive(True)
 close('all')
 
-class Camera(object):
-    
-    def __init__(self):
-        self.sensor_x = 14.8
-        self.sensor_y = 22.2
-        self.sensor_ratio = 3/2
-    
 
 class ElementalImage(object):
     
@@ -36,22 +30,43 @@ class ElementalImage(object):
     def load(self, path, name):
         image = double(imread(path+name))
         image /= image.max()
+        image = image[650:3680,650:,:]
         
         return image
 
 class IntegralImage(object):
     
-    def __init__(self):
-        something
+    def __init__(self, camera, ei_path):
+        
+        self.sensor_x = camera['sensor_x']
+        self.sensor_y = camera['sensor_y']
+        self.sensor_ratio = camera['sensor_ratio']
+        
+        self.ei_list, self.shape = self.load_ei(ei_path)
+        
+    def load_ei(self, path):
+        images = []
+        for filename in os.listdir(path):
+            print filename
+            img = ElementalImage(path,filename)
+            images.append(img)
+        shape = shape(images[0])
+        return images, shape
+    
+    def constructor(self):
+        integral = zeros(shape(self.shape))
+        
 
+
+
+camera = {
+        'sensor_x' : 14.8,
+        'sensor_y' : 22.2,
+        'sensor_ratio' : 3/2
+}
 
 image_directory='ei1_5x3_p4\\'
 ei1='ei1_00_00_00_1.jpg'
-ei2='ei1_00_00_00_2.jpg'
-ei3='ei1_00_00_00_3.jpg'
-#imatge1=double(imread(image_directory+ei1))/255
-#imatge2=double(imread(image_directory+ei2))/255
-#imatge3=double(imread(image_directory+ei3))/255
-#
-#mitja1=(imatge1+imatge2+imatge3)/3
-#imsave(image_directory+'mitjana1',mitja1)
+ei2='ei1_00_04_00_1.jpg'
+ei3='ei1_00_08_00_2.jpg'
+
