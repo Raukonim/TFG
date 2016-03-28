@@ -42,21 +42,29 @@ class IntegralImage(object):
         self.sensor_y = camera['sensor_y']
         self.sensor_ratio = camera['sensor_ratio']
         
-        self.ei_list, self.shape = self.load_ei(ei_path)
+        self.ei_list = self.load_ei(ei_path)
         
     def load_ei(self, path):
-        images = []
+        elemental_images = []
         for filename in os.listdir(path):
-            print filename
+            #print filename
             img = ElementalImage(path,filename)
-            images.append(img)
-        shape = shape(images[0])
-        return images, shape
+            elemental_images.append(img)
+        return elemental_images
     
     def constructor(self):
-        integral = zeros(shape(self.shape))
         
-
+        size = [445]
+        for i in range(3):
+            size.append(array(shape(self.ei_list[0].image))[i])
+        print size
+        integral = zeros(size)
+        ei_num = 0
+        for ei in ei_list:
+            #integral[] = 
+        
+        
+        return integral
 
 
 camera = {
