@@ -74,12 +74,18 @@ class IntegralImage(object):
         
         normalization = zeros([self.ei_list[0].ei_pixel_x+(2*pixel_pitch_x),
                               self.ei_list[0].ei_pixel_y+(4*pixel_pitch_y)])
+#        figure()
+#        k=0
         for i in range(self.sensor_array[0]):
             for j in range(self.sensor_array[1]):
                 normalization[i*pixel_pitch_x:(i*pixel_pitch_x)+x_length,
                               j*pixel_pitch_y:(j*pixel_pitch_y)+y_length] += 1
+#                subplot(3,5,i+j+1)
+#                imsave(str(k)+'.png',normalization)
+#                k+=1
 #                print i, j, normalization
-
+        normalization = normalization[pixel_pitch_x:-pixel_pitch_x,2*pixel_pitch_y:-2*pixel_pitch_y]
+        imsave('Oxy.png', normalization)
         return normalization
     
     def constructor(self):
