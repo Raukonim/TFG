@@ -49,10 +49,12 @@ class IntegralImage(object):
         self.sensor_y = camera['sensor_y']
         self.sensor_ratio = camera['sensor_ratio']
         self.sensor_array = [int(camera['sensor_array'][0]),int(camera['sensor_array'][-1])]
+        self.sensor_focal = int(camera['sensor_focal'])
         
         self.ei_list = self.load_ei(ei_path)
         
         self.oxy = self.normalization_array()
+        
         
     def load_ei(self, path):
         elemental_images = []
@@ -72,14 +74,14 @@ class IntegralImage(object):
         pixel_pitch_y = 4 / self.ei_list[0].pixel_y
 #        print pixel_pitch_y
         
-        normalization = zeros([self.ei_list[0].ei_pixel_x+(2*pixel_pitch_x),
-                              self.ei_list[0].ei_pixel_y+(4*pixel_pitch_y)])
+        normalization = zeros([self.ei_list[0].ei_pixel_x+(2*pixel_pitch_x)-1,
+                              self.ei_list[0].ei_pixel_y+(4*pixel_pitch_y),3])
 #        figure()
 #        k=0
         for i in range(self.sensor_array[0]):
             for j in range(self.sensor_array[1]):
                 normalization[i*pixel_pitch_x:(i*pixel_pitch_x)+x_length,
-                              j*pixel_pitch_y:(j*pixel_pitch_y)+y_length] += 1
+                              j*pixel_pitch_y:(j*pixel_pitch_y)+y_length,:] += 1
 #                subplot(3,5,i+j+1)
 #                imsave(str(k)+'.png',normalization)
 #                k+=1
@@ -88,18 +90,32 @@ class IntegralImage(object):
         imsave('Oxy.png', normalization)
         return normalization
     
-    def constructor(self):
+    def constructor(self,depth):
         
+        z = depth
+        Nx = self.ei_list[0].ei_pixel_x
+        Ny = self.ei_list[0].ei_pixel_y
+        pitch = 4 #mm
+        cx = self.sensor_x #mm
+        cy = self.sensor_y #mm
+        g = self.sensor_focal
+        M = z / g
+        x_arg = (Nx*pitch)/(M*cx)
+        y_arg = (Ny*pitch)/(M*cy)
         size = [445]
-        for i in range(3):
-            size.append(array(shape(self.ei_list[0].image))[i])
-        print size
-        integral = zeros(size)
+#        for i in range(3):
+#            size.append(array(shape(self.ei_list[0].image))[i])
+#        print size
+        integral = zeros([Nx,Ny,3])
         ei_num = 0
-        for ei in ei_list:
-            #integral[] = 
-            patata        
-        return integral
+        for k in range(self.sensor_array[0]) :
+            for l in range(self.sensor_array[1]):
+                Ekl = self.ei_list[ei_num].image
+                integral += Ekl
+                ei_num +=1
+                
+        return integral/self.oxy
+
 
 
 camera = {
@@ -108,7 +124,8 @@ camera = {
         'sensor_ratio' : 3/2,
         'x_pixels' : 2592,
         'y_pixels' : 3888,
-        'sensor_array' : '3x5'
+        'sensor_array' : '3x5',
+        'sensor_focal' : 18
 }
 
 image_directory='ei1_5x3_p4\\'
