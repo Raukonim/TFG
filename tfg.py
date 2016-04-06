@@ -19,9 +19,9 @@ class ElementalImage(object):
         
         self.ei_directory = directory
         self.ei_name = name
-        self.ei_x = int(self.ei_name[4:6])
-        self.ei_y = int(self.ei_name[7:9])
-        self.ei_z = int(self.ei_name[10:12])
+        self.ei_x = int(self.ei_name[7:9])
+        self.ei_y = int(self.ei_name[10:12])
+        self.ei_z = int(self.ei_name[13:15])
         
         self.image = self.load(self.ei_directory,self.ei_name)
         self.ei_pixel_x = int(shape(self.image)[0])
@@ -96,22 +96,25 @@ class IntegralImage(object):
         Nx = self.ei_list[0].ei_pixel_x
         Ny = self.ei_list[0].ei_pixel_y
         pitch = 4 #mm
-        cx = self.sensor_x #mm
-        cy = self.sensor_y #mm
+        cx = self.ei_list[0].ei_size[0] #mm
+        cy = self.ei_list[0].ei_size[1] #mm
         g = self.sensor_focal
         M = z / g
-        x_arg = (Nx*pitch)/(M*cx)
-        y_arg = (Ny*pitch)/(M*cy)
-        size = [445]
+        x_arg = int((Nx*pitch)/(M*cx))
+        y_arg = int((Ny*pitch)/(M*cy))
+        print x_arg, y_arg
+#        size = [445]
 #        for i in range(3):
 #            size.append(array(shape(self.ei_list[0].image))[i])
 #        print size
-        integral = zeros([Nx,Ny,3])
+        integral = zeros(shape(self.oxy))
+#        integral = zeros([Nx,Ny,3])
         ei_num = 0
         for k in range(self.sensor_array[0]) :
             for l in range(self.sensor_array[1]):
                 Ekl = self.ei_list[ei_num].image
                 integral += Ekl
+                print k, l
                 ei_num +=1
                 
         return integral/self.oxy
